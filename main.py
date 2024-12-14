@@ -10,7 +10,7 @@ class DataRecord(BaseModel):
 
 app = FastAPI()
 
-DATABASE_URL = "postgresql://postgres:wdf3VquQsgwQachtnDGr@database-iot.cbo0oy8e43y8.us-east-2.rds.amazonaws.com/postgres"
+DATABASE_URL = "postgresql://postgres:benavidesgod1!@postgres/postgres"
 
 def get_db_connection():
     conn = psycopg2.connect(DATABASE_URL)
