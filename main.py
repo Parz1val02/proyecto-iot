@@ -10,7 +10,7 @@ class DataRecord(BaseModel):
 
 app = FastAPI()
 
-DATABASE_URL = "postgresql://postgres:benavidesgod1!@postgres/postgres"
+DATABASE_URL = "postgresql://postgres:benavidesgod1!@postgres/iot"
 
 def get_db_connection():
     conn = psycopg2.connect(DATABASE_URL)
@@ -22,7 +22,7 @@ async def get_all_data():
     conn = get_db_connection()
     cursor = conn.cursor(cursor_factory=RealDictCursor)
 
-    cursor.execute("SELECT * FROM iot.message")
+    cursor.execute("SELECT * FROM message")
     data = cursor.fetchall()
 
     cursor.close()
@@ -35,7 +35,7 @@ async def get_data_by_id(id: int):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM iot.message WHERE id = %s", (id,))
+    cursor.execute("SELECT * FROM message WHERE id = %s", (id,))
     data = cursor.fetchone()
 
     cursor.close()
@@ -52,7 +52,7 @@ async def add_data(record: DataRecord):
     cursor = conn.cursor()
 
     insert_query = """
-      INSERT INTO iot.message (lab_id, count, timestamp)
+      INSERT INTO message (lab_id, count, timestamp)
       VALUES (%s, %s, %s)
     """
 
@@ -70,7 +70,7 @@ async def update_data(id: int, record: DataRecord):
     cursor = conn.cursor()
 
     update_query = """
-      UPDATE iot.message
+      UPDATE message
       SET lab_id = %s, count = %s, timestamp = %s
       WHERE id = %s
     """
@@ -88,7 +88,7 @@ async def delete_data(id: int):
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("DELETE FROM iot.message WHERE id = %s", (id,))
+    cursor.execute("DELETE FROM message WHERE id = %s", (id,))
     conn.commit()
 
     cursor.close()
