@@ -67,7 +67,7 @@ services:
     env_file:
       - ./redash.env
     environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:grupo4@proyectoiot.com}
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-grupo4@proyectoiot.com}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-benavidesgod1!}
     ports:
       - "5050:80"
