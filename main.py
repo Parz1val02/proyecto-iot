@@ -3,6 +3,7 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 from pydantic import BaseModel
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 
 class DataRecord(BaseModel):
@@ -56,7 +57,10 @@ async def get_data_by_id(id: int):
 @app.post("/data")
 async def add_data(record: DataRecord):
 
-    current_timestamp = datetime.now().isoformat()
+    current_timestamp_utc = datetime.now().astimezone(ZoneInfo("UTC"))
+    current_timestamp_lima = current_timestamp_utc.astimezone(
+        ZoneInfo("America/Lima")
+    ).isoformat()
 
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -66,7 +70,7 @@ async def add_data(record: DataRecord):
       VALUES (%s, %s, %s)
     """
 
-    cursor.execute(insert_query, (record.lab_id, record.count, current_timestamp))
+    cursor.execute(insert_query, (record.lab_id, record.count, current_timestamp_lima))
     conn.commit()
 
     cursor.close()
