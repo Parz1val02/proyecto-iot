@@ -1,20 +1,25 @@
-from fastapi import FastAPI, File, HTTPException
+from fastapi import FastAPI, HTTPException
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from pydantic import BaseModel
+from datetime import datetime
+
 
 class DataRecord(BaseModel):
     lab_id: int
     count: int
-    timestamp: str  # Usa ISO 8601 format (e.g., "2024-12-13T15:03:00Z")
+    # timestamp: str  # Usa ISO 8601 format (e.g., "2024-12-13T15:03:00Z")
+
 
 app = FastAPI()
 
 DATABASE_URL = "postgresql://postgres:benavidesgod1!@postgres/iot"
 
+
 def get_db_connection():
     conn = psycopg2.connect(DATABASE_URL)
     return conn
+
 
 @app.get("/data")
 async def get_all_data():
@@ -28,7 +33,8 @@ async def get_all_data():
     cursor.close()
     conn.close()
 
-    return data 
+    return data
+
 
 @app.get("/data/{id}")
 async def get_data_by_id(id: int):
@@ -46,8 +52,12 @@ async def get_data_by_id(id: int):
 
     return data
 
+
 @app.post("/data")
 async def add_data(record: DataRecord):
+
+    current_timestamp = datetime.now().isoformat()
+
     conn = get_db_connection()
     cursor = conn.cursor()
 
@@ -56,13 +66,14 @@ async def add_data(record: DataRecord):
       VALUES (%s, %s, %s)
     """
 
-    cursor.execute(insert_query, (record.lab_id, record.count, record.timestamp))
+    cursor.execute(insert_query, (record.lab_id, record.count, current_timestamp))
     conn.commit()
 
     cursor.close()
     conn.close()
 
     return {"message": "Data added successfully"}
+
 
 @app.put("/data/{id}")
 async def update_data(id: int, record: DataRecord):
@@ -83,6 +94,7 @@ async def update_data(id: int, record: DataRecord):
 
     return {"message": "Data updated successfully"}
 
+
 @app.delete("/data/{id}")
 async def delete_data(id: int):
     conn = get_db_connection()
@@ -95,4 +107,4 @@ async def delete_data(id: int):
     conn.close()
 
     return {"message": "Data deleted successfully"}
-  
+
