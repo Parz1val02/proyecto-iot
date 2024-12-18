@@ -6,7 +6,7 @@ from datetime import datetime
 
 
 class DataRecord(BaseModel):
-    lab_id: int
+    lab_id: str
     count: int
     # timestamp: str  # Usa ISO 8601 format (e.g., "2024-12-13T15:03:00Z")
 
@@ -64,7 +64,7 @@ async def add_data(record: DataRecord):
     select_query = """
         SELECT id FROM lab WHERE module = %s
     """
-    cursor.execute(select_query, (str(record.lab_id),))
+    cursor.execute(select_query, (record.lab_id,))
     lab_id_row = cursor.fetchone()
 
     if not lab_id_row:
