@@ -56,17 +56,30 @@ async def get_data_by_id(id: int):
 @app.post("/data")
 async def add_data(record: DataRecord):
 
-    current_timestamp = datetime.now().isoformat(timespec="seconds")
+    current_timestamp = datetime.now().isoformat(timespec='seconds')
 
     conn = get_db_connection()
     cursor = conn.cursor()
+
+    select_query = """
+        SELECT id FROM lab WHERE module = %s
+    """
+    cursor.execute(select_query, (record.lab_id,))
+    lab_id_row = cursor.fetchone()
+
+    if not lab_id_row:
+        raise HTTPException(
+            status_code=404, detail="Lab not found with the provided module value"
+        )
+
+    lab_id = lab_id_row[0]
 
     insert_query = """
       INSERT INTO message (lab_id, count, timestamp)
       VALUES (%s, %s, %s)
     """
 
-    cursor.execute(insert_query, (record.lab_id, record.count, current_timestamp))
+    cursor.execute(insert_query, (lab_id, record.count, current_timestamp))
     conn.commit()
 
     cursor.close()
