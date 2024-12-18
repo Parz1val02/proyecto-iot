@@ -2,8 +2,7 @@ from fastapi import FastAPI, HTTPException
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from pydantic import BaseModel
-from datetime import datetime
-from zoneinfo import ZoneInfo
+from datetime import datetime, timedelta
 
 
 class DataRecord(BaseModel):
@@ -57,9 +56,9 @@ async def get_data_by_id(id: int):
 @app.post("/data")
 async def add_data(record: DataRecord):
 
-    current_timestamp_lima = datetime.now(ZoneInfo("America/Lima")).isoformat(
-        timespec="seconds"
-    )
+    current_timestamp = datetime.now()
+    utc_minus_5 = current_timestamp - timedelta(hours=5)
+    utc_minus_5_iso = utc_minus_5.isoformat()
 
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -69,7 +68,7 @@ async def add_data(record: DataRecord):
       VALUES (%s, %s, %s)
     """
 
-    cursor.execute(insert_query, (record.lab_id, record.count, current_timestamp_lima))
+    cursor.execute(insert_query, (record.lab_id, record.count, utc_minus_5_iso))
     conn.commit()
 
     cursor.close()
