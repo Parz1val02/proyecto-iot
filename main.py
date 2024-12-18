@@ -56,7 +56,7 @@ async def get_data_by_id(id: int):
 @app.post("/data")
 async def add_data(record: DataRecord):
 
-    current_timestamp = datetime.now().isoformat(timespec='seconds')
+    current_timestamp = datetime.now().isoformat(timespec="seconds")
 
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -64,7 +64,7 @@ async def add_data(record: DataRecord):
     select_query = """
         SELECT id FROM lab WHERE module = %s
     """
-    cursor.execute(select_query, (record.lab_id,))
+    cursor.execute(select_query, (str(record.lab_id),))
     lab_id_row = cursor.fetchone()
 
     if not lab_id_row:
