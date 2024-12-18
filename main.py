@@ -57,10 +57,9 @@ async def get_data_by_id(id: int):
 @app.post("/data")
 async def add_data(record: DataRecord):
 
-    current_timestamp_utc = datetime.now().astimezone(ZoneInfo("UTC"))
-    current_timestamp_lima = current_timestamp_utc.astimezone(
-        ZoneInfo("America/Lima")
-    ).isoformat()
+    current_timestamp_lima = datetime.now(ZoneInfo("America/Lima")).isoformat(
+        timespec="seconds"
+    )
 
     conn = get_db_connection()
     cursor = conn.cursor()
